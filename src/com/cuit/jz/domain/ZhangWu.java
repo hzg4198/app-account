@@ -53,4 +53,16 @@ public class ZhangWu {
 		this.username = username;
 	}
 
+	@Override
+	public String toString() {
+		return "ZhangWu{" +
+				"zwid=" + zwid +
+				", flname='" + flname + '\'' +
+				", money=" + money +
+				", zhanghu='" + zhanghu + '\'' +
+				", createtime='" + createtime + '\'' +
+				", description='" + description + '\'' +
+				", username='" + username + '\'' +
+				'}';
+	}
 }

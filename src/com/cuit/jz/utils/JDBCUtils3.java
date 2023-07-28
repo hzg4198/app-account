@@ -6,10 +6,12 @@ import org.apache.commons.dbcp.BasicDataSourceFactory;
 import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 public class JDBCUtils3 {
 	
-	//´´½¨Á¬½Ó³Ø
+	//åˆ›å»ºè¿žæŽ¥æ± 
 	public static DataSource dataSource;
 	
 	static{
@@ -22,9 +24,17 @@ public class JDBCUtils3 {
 			e.printStackTrace();
 		}
 	}
-	//·µ»ØÁ¬½Ó³Ø¶ÔÏó
+	//è¿”å›žè¿žæŽ¥æ± å¯¹è±¡
 	
 	public static DataSource getDataSource(){
 		return dataSource;
+	}
+	public static Connection getConnection()  {
+
+		try {
+			return dataSource.getConnection();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
