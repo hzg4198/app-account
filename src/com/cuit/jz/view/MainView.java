@@ -4,16 +4,17 @@ import com.cuit.jz.domain.ZhangWu;
 import com.cuit.jz.service.ZhangWuService;
 import com.cuit.jz.utils.Print;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class MainView {
 
 
-	public  void login(){
+	public void login() throws SQLException {
 		boolean flag = false;
 		Scanner sc = new Scanner(System.in);
-		while (flag){
+		while (!flag){
 			System.out.println("-----------记账app------------");
 			System.out.println("1.Login,2.register,3.quit");
 			System.out.println("enter the num which you wanna operate: 1-3");
@@ -37,8 +38,23 @@ public class MainView {
 		System.out.println();
 	}
 	//登陆
-	private void Login() {
-
+	private void Login() throws SQLException {
+		ZhangWuService zhangWuService = new ZhangWuService();
+		Scanner sc = new Scanner(System.in);
+		boolean flag = false;
+		while (!flag) {
+			System.out.println("请输入用户名：");
+			String username = sc.next();
+			System.out.println("请输入密码：");
+			String password = sc.next();
+			boolean login = zhangWuService.Login(username, password);
+			if (login) {
+				flag = true;
+				run();
+			} else {
+				System.out.println("用户名或密码错误，重新输入：");
+			}
+		}
 	}
 
 	public void run(){
