@@ -6,7 +6,6 @@ import com.cuit.jz.service.userService;
 import com.cuit.jz.utils.Print;
 
 import java.sql.SQLException;
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -42,14 +41,13 @@ public class MainView {
 		}
 	}
 
-
 	public void run(){
 		boolean flag=true;
 		Scanner in=new Scanner(System.in);
 		while(flag){
 			System.out.println("-----------记账软件-------------");
 			System.out.println("1.查询账务，2.多条件查询，3.添加账务，4.编辑账务，5.删除账务，6.搜索账务，7.导出账务,8.退出");
-			System.out.println("请输入你要操作的功能的序号1-5");
+			System.out.println("请输入你要操作的功能的序号1-8");
 			int op=in.nextInt();
 			switch (op) {
 				case 1:
@@ -65,10 +63,10 @@ public class MainView {
 					editZhangWu();
 					break;
 				case 5:
-					deleteZhangWu();
+					chooseDeleteMethod();
 					break;
 				case 6:
-					queryZhangWu();
+					searchZhangWu();
 					break;
 				case 7:
 					exportZhangWu();
@@ -83,6 +81,157 @@ public class MainView {
 		}
 	}
 
+	private void chooseDeleteMethod() {
+		System.out.println("请选择删除的方式");
+		System.out.println("1.删除单条，2.删除多条");
+		int order = sc.nextInt();
+		switch (order) {
+			case 1:
+				deleteZhangWu();
+				break;
+			case 2:
+				deleteMultipleAcc();
+				break;
+		}
+
+	}
+
+	private void deleteMultipleAcc() {
+		List<ZhangWu> all = zws.findAll();
+		int num = all.size();
+		Print.printZhangWu(all);
+		List<Integer> list = new ArrayList<>();
+		if(num!=0){
+			while(true) {
+				System.out.println("请输入你要删除的序号，输入-1结束");
+				int index = sc.nextInt() - 1;
+				if(Objects.equals(index,-2)){
+					System.out.println("输入完毕，你要删除的序号为："+list);
+					break;
+				}
+				list.add(index);
+			}
+			System.out.println("确认删除请输入1");
+			int affirm = sc.nextInt();
+			if(Objects.equals(affirm ,1))zws.deleteBatch(all ,list);
+			else System.out.println("取消删除，返回上一级");
+		}
+
+	}
+
+	private void searchZhangWu() {
+		System.out.println("请选择搜索的方式：");
+		Print.printOptions();
+		int op = sc.nextInt();
+		switch (op) {
+			case 1:
+				searchNameKeyWords();
+				break;
+			case 2:
+				switchAccKinds();
+				break;
+			case 3:
+				chooseMoneyMethod();
+				break;
+			case 4:
+				chooseTimeMethod();
+				break;
+			case 5:
+				searchDescKeyWords();
+				break;
+		}
+	}
+
+	private void chooseTimeMethod() {
+		System.out.println("请选择搜索方式：");
+		Print.showTimeKinds();
+		int order = sc.nextInt();
+		switch (order) {
+			case 1:
+				queryBySpecificDate();
+				break;
+			case 2:
+				searchTime(0);
+				break;
+			case 3:
+				searchTime(1);
+				break;
+			case 4:
+				queryByRangeDate();
+				break;
+		}
+	}
+
+	private void searchTime(int order) {
+		System.out.println("请输入日期:（格式yyyy-MM-dd）");
+		String s = sc.next();
+		try {
+			Date date = sdf.parse(s);
+			List<ZhangWu> zhangWus = zws.searchDate(order ,date);
+			Print.printZhangWu(zhangWus);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void searchNameKeyWords() {
+		System.out.println("请输入要搜索的类别的关键字：");
+		String key = sc.next();
+		List<ZhangWu> zhangWus = zws.searchKeyword(key);
+		Print.printZhangWu(zhangWus);
+	}
+
+	private void switchAccKinds() {
+		System.out.println("请输出要搜索的账户类型：");
+		String key = sc.next();
+		List<ZhangWu> zhangWus = zws.searchAccKind(key);
+		Print.printZhangWu(zhangWus);
+	}
+
+	private void chooseMoneyMethod() {
+		System.out.println("请选择搜索方式：");
+		Print.showMoneyKinds();
+		int order = sc.nextInt();
+		switch (order) {
+			case 1:
+				searchMoney(0);
+				break;
+			case 2:
+				searchMoney(1);
+				break;
+			case 3:
+				searchMoney();
+				break;
+		}
+	}
+	//范围搜索
+	private void searchMoney() {
+		System.out.println("查询金额范围，请输入金额1：");
+		double moneyL = sc.nextDouble();
+		System.out.println("请输入金额2：");
+		double moneyH = sc.nextDouble();
+		List<ZhangWu> zhangWus = zws.searchMoney(moneyL ,moneyH);
+		Print.printZhangWu(zhangWus);
+	}
+	//根据order选择搜索方式
+	private void searchMoney(int order) {
+		System.out.println("请输入金额：");
+		Double money = sc.nextDouble();
+		List<ZhangWu> zhangWus = zws.searchMoney(order,money);
+		Print.printZhangWu(zhangWus);
+	}
+
+	private void switchTime() {
+
+	}
+
+	private void searchDescKeyWords() {
+		System.out.println("请输入要搜索的说明的关键字：");
+		String key = sc.next();
+		List<ZhangWu> zhangWus = zws.searchKeyword1(key);
+		Print.printZhangWu(zhangWus);
+	}
+
 	private void chooseAddMethod() {
 		System.out.println("请输入你要添加的方式");
 		System.out.println("1.添加一项，2.添加多项");
@@ -90,11 +239,11 @@ public class MainView {
 		if(Objects.equals(op,1)){
 			addSingleZhangWu();
 		}else {
-			addMutipleAccount();
+			addMultipleAccount();
 		}
 	}
 
-	private void addMutipleAccount() {
+	private void addMultipleAccount() {
 		List<ZhangWu> list = new ArrayList<>();
 		int count = 0;
 		while(true){
@@ -115,8 +264,8 @@ public class MainView {
 			System.out.println("请输入说明：");
 			zhangWu.setDescription(sc.next());
 			list.add(zhangWu);
-			zws.addMutiple(list);
 		}
+		zws.addMutiple(list);
 
 	}
 
@@ -188,9 +337,6 @@ public class MainView {
 		}
 	}
 
-	private void queryZhangWu() {
-
-	}
 	//查询该用户下所有账目
 	private static void findZhangWu() {
 		List<ZhangWu> findAll = zws.findAll();

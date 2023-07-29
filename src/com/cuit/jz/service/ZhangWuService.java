@@ -47,4 +47,36 @@ public class ZhangWuService {
 	public void deleteAcc(List<ZhangWu> all, int index) {
 		zwd.deleteAcc(all ,index);
 	}
+
+	public void deleteBatch(List<ZhangWu> all, List<Integer> list) {
+		for (Integer integer : list) {
+			zwd.deleteAcc(all ,integer);
+		}
+
+	}
+
+	public List<ZhangWu> searchKeyword(String key) {
+		return zwd.searchKeyWord(key);
+	}
+
+	public List<ZhangWu> searchKeyword1(String key) {
+		return zwd.searchKeyWord1(key);
+	}
+
+	public List<ZhangWu> searchAccKind(String key) {
+		return zwd.searchAccKind(key);
+
+	}
+
+	public List<ZhangWu> searchMoney(int order, Double money) {
+		return zwd.searchMoney(order,money);
+	}
+
+	public List<ZhangWu> searchMoney(double moneyL, double moneyH) {
+		return zwd.searchMoney(moneyL ,moneyH);
+	}
+
+	public List<ZhangWu> searchDate(int order, Date date) {
+		return zwd.searchDate(order,date);
+	}
 }

@@ -3,11 +3,10 @@ package com.cuit.jz.dao;
 import com.cuit.jz.domain.ZhangWu;
 import com.cuit.jz.utils.JDBCUtils3;
 import com.cuit.jz.view.MainView;
+import jdk.nashorn.internal.scripts.JD;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
-import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
-import sun.applet.Main;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -42,8 +41,7 @@ public class ZhangWuDao {
 		String sql = "select * from cuit_zhangwu where username=? and createtime=?";
 		Object[] params = {MainView.user ,date};
 		try {
-			List<ZhangWu> query = qr.query(sql, new BeanListHandler<>(ZhangWu.class), params);
-			return query;
+			return qr.query(sql, new BeanListHandler<>(ZhangWu.class), params);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -132,6 +130,82 @@ public class ZhangWuDao {
 		try {
 			int delete = qr.update(JDBCUtils3.getConnection(), sql ,params);
 			System.out.println("成功删除数目："+delete);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ZhangWu> searchKeyWord(String key) {
+		String sql = "select * from cuit_zhangwu where flname like ?";
+		Object[] params = {"%"+key+"%"};
+		try {
+			return qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), params);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ZhangWu> searchKeyWord1(String key) {
+		String sql = "select * from cuit_zhangwu where description like ?";
+		Object[] params = {"%"+key+"%"};
+		try {
+			return qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), params);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ZhangWu> searchAccKind(String key) {
+		String sql = "select * from cuit_zhangwu where zhanghu like ?";
+		Object[] params = {"%"+key+"%"};
+		try {
+			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class) ,params);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ZhangWu> searchMoney(int order, Double money) {
+		//order:0：低于某个金额
+		String sql = "";
+		switch (order) {
+			case 0:
+			sql = "select * from cuit_zhangwu where money <=?";
+				break;
+			case 1:
+			sql = "select * from cuit_zhangwu where money >?";
+				break;
+		}
+		Object[] params = {money};
+		try {
+			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class),params);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ZhangWu> searchMoney(double moneyL, double moneyH) {
+		String sql = "select * from cuit_zhangwu where money between ? and ?";
+		Object[] params = moneyL>moneyH? new Object[]{moneyH, moneyL} : new Object[]{moneyL, moneyH};
+		try {
+			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class) ,params);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ZhangWu> searchDate(int order, Date date) {
+		String sql = "";
+		switch (order) {
+			case 0:
+				sql ="select * from cuit_zhangwu where createtime < ?";
+				break;
+			case 1:
+				sql ="select * from cuit_zhangwu where createtime > ?";
+		}
+		Object[] params = {date};
+		try {
+			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class) ,params);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

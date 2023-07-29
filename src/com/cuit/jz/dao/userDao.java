@@ -51,7 +51,6 @@ public int Login(String username ,String password) throws SQLException {
         String sql = "select password from user where username=?";
         Object[] params = {username};
         Object[] query = qr.query(JDBCUtils3.getConnection(), sql, new ArrayHandler(), params);
-        System.out.println(Arrays.toString(query));
         return Objects.equals(query[0],password);
     }
 
