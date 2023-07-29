@@ -75,8 +75,7 @@ public class ZhangWuDao {
 		String sql = "select * from cuit_zhangwu where username=? and flname like '%支出%'";
 		Object[] params = {MainView.user};
 		try {
-			List<ZhangWu> query = qr.query(JDBCUtils3.getConnection(),sql, new BeanListHandler<>(ZhangWu.class), params);
-			return query;
+			return qr.query(JDBCUtils3.getConnection(),sql, new BeanListHandler<>(ZhangWu.class), params);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -136,8 +135,8 @@ public class ZhangWuDao {
 	}
 
 	public List<ZhangWu> searchKeyWord(String key) {
-		String sql = "select * from cuit_zhangwu where flname like ?";
-		Object[] params = {"%"+key+"%"};
+		String sql = "select * from cuit_zhangwu where username=? and flname like ?";
+		Object[] params = {MainView.user,"%"+key+"%"};
 		try {
 			return qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), params);
 		} catch (SQLException e) {
@@ -146,8 +145,8 @@ public class ZhangWuDao {
 	}
 
 	public List<ZhangWu> searchKeyWord1(String key) {
-		String sql = "select * from cuit_zhangwu where description like ?";
-		Object[] params = {"%"+key+"%"};
+		String sql = "select * from cuit_zhangwu where username=? and description like ?";
+		Object[] params = {MainView.user,"%"+key+"%"};
 		try {
 			return qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), params);
 		} catch (SQLException e) {
@@ -156,8 +155,8 @@ public class ZhangWuDao {
 	}
 
 	public List<ZhangWu> searchAccKind(String key) {
-		String sql = "select * from cuit_zhangwu where zhanghu like ?";
-		Object[] params = {"%"+key+"%"};
+		String sql = "select * from cuit_zhangwu where username=? and zhanghu like ?";
+		Object[] params = {MainView.user,"%"+key+"%"};
 		try {
 			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class) ,params);
 		} catch (SQLException e) {
@@ -170,13 +169,13 @@ public class ZhangWuDao {
 		String sql = "";
 		switch (order) {
 			case 0:
-			sql = "select * from cuit_zhangwu where money <=?";
+			sql = "select * from cuit_zhangwu where username=? and money <=?";
 				break;
 			case 1:
-			sql = "select * from cuit_zhangwu where money >?";
+			sql = "select * from cuit_zhangwu where username=? and money >?";
 				break;
 		}
-		Object[] params = {money};
+		Object[] params = {MainView.user,money};
 		try {
 			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class),params);
 		} catch (SQLException e) {
@@ -185,8 +184,8 @@ public class ZhangWuDao {
 	}
 
 	public List<ZhangWu> searchMoney(double moneyL, double moneyH) {
-		String sql = "select * from cuit_zhangwu where money between ? and ?";
-		Object[] params = moneyL>moneyH? new Object[]{moneyH, moneyL} : new Object[]{moneyL, moneyH};
+		String sql = "select * from cuit_zhangwu where username=? and money between ? and ?";
+		Object[] params = moneyL>moneyH? new Object[]{MainView.user,moneyH, moneyL} : new Object[]{MainView.user,moneyL, moneyH};
 		try {
 			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class) ,params);
 		} catch (SQLException e) {
@@ -198,12 +197,12 @@ public class ZhangWuDao {
 		String sql = "";
 		switch (order) {
 			case 0:
-				sql ="select * from cuit_zhangwu where createtime < ?";
+				sql ="select * from cuit_zhangwu where username=? and createtime < ?";
 				break;
 			case 1:
-				sql ="select * from cuit_zhangwu where createtime > ?";
+				sql ="select * from cuit_zhangwu where username=? and createtime > ?";
 		}
-		Object[] params = {date};
+		Object[] params = {MainView.user,date};
 		try {
 			return qr.query(JDBCUtils3.getConnection() ,sql ,new BeanListHandler<>(ZhangWu.class) ,params);
 		} catch (SQLException e) {

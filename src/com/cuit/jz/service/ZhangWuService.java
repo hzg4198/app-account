@@ -22,7 +22,7 @@ public class ZhangWuService {
 	public List<ZhangWu> checkDate(Date sdate ,Date eDate){
 		return zwd.checkDate(sdate ,eDate);
 	}
-	//优化：合并收入和支出
+	//浼樺寲锛氬悎骞舵敹鍏ュ拰鏀嚭
 	public List<ZhangWu> queryIncome(){
 		return zwd.queryIncome();
 	}
