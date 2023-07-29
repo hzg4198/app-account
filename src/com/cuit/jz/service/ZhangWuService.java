@@ -34,4 +34,17 @@ public class ZhangWuService {
 	public void addAccount(String flname, Double money, String account, String time, String description, String user) {
 		zwd.addAccount(flname ,money ,account ,time ,description ,user);
 	}
+
+	public void addMutiple(List<ZhangWu> list) {
+		zwd.addMuti(list);
+	}
+
+	public void editAccount(List<ZhangWu> list, int index ,int op ,String str) {
+		zwd.editAcc(list ,index ,op ,str);
+	}
+
+
+	public void deleteAcc(List<ZhangWu> all, int index) {
+		zwd.deleteAcc(all ,index);
+	}
 }

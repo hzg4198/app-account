@@ -5,20 +5,24 @@ import com.cuit.jz.utils.JDBCUtils3;
 import com.cuit.jz.view.MainView;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import sun.applet.Main;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ZhangWuDao {
 	static QueryRunner qr=new QueryRunner(JDBCUtils3.getDataSource());
-//	private static final String user;
-//	static {
-//		user = MainView.user;
-//	}
-	
+	static  Map<Integer ,String> editMap = new HashMap<>();
+	static {
+		editMap.put(1,"update cuit_zhangwu set flname=? where zwid=?");
+		editMap.put(2,"update cuit_zhangwu set zhanghu=? where zwid=?");
+		editMap.put(3,"update cuit_zhangwu set money=? where zwid=?");
+		editMap.put(4,"update cuit_zhangwu set createtime=? where zwid=?");
+		editMap.put(5,"update cuit_zhangwu set description=? where zwid=?");
+	}
+
 	public List<ZhangWu> findAll(){
 
 		System.out.println();
@@ -62,9 +66,10 @@ public class ZhangWuDao {
 		Object[] params = {MainView.user};
 		try {
 			List<ZhangWu> query = qr.query(JDBCUtils3.getConnection(),sql, new BeanListHandler<>(ZhangWu.class), params);
+			System.out.println(query);
 			return query;
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw  new RuntimeException(e);
 		}
 	}
 
@@ -86,6 +91,47 @@ public class ZhangWuDao {
 		try {
 			qr.insert(JDBCUtils3.getConnection() ,sql ,new ArrayHandler() ,params);
 			System.out.println("插入成功");
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void addMuti(List<ZhangWu> list) {
+		int i = 0,len = list.size();//记录项目数量(没用到)
+		while (i < len){
+			String sql = "insert into cuit_zhangwu (flname,money,zhanghu,createtime,description,username)" +
+					"values(?,?,?,?,?,?)";
+			ZhangWu zhangWu = list.get(i++);
+			Object[] params = {zhangWu.getFlname() ,zhangWu.getMoney() ,zhangWu.getZhanghu() ,zhangWu.getCreatetime() ,
+			zhangWu.getDescription() , MainView.user};
+			try {
+				qr.insert(JDBCUtils3.getConnection() ,sql ,new ArrayHandler() ,params);
+				System.out.println("第"+i+"条账目添加成功！");
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public void editAcc(List<ZhangWu> list, int index, int op, String str) {
+		int id = list.get(index).getZwid();//记录原表中的id
+		String sql = editMap.get(op);
+		Object[] params = {str,id};
+		try {
+			int update = qr.update(JDBCUtils3.getConnection(), sql ,params);
+			System.out.println("成功更新数目："+update);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void deleteAcc(List<ZhangWu> list, int index) {
+		int id = list.get(index).getZwid();
+		String sql = "delete from cuit_zhangwu where zwid=?";
+		Object[] params = {id};
+		try {
+			int delete = qr.update(JDBCUtils3.getConnection(), sql ,params);
+			System.out.println("成功删除数目："+delete);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
