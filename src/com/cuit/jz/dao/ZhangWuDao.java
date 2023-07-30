@@ -9,9 +9,8 @@ import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -63,7 +62,7 @@ public class ZhangWuDao {
 		}
 	}
 
-	public List<ZhangWu> queryIncome(){
+	public static List<ZhangWu> queryIncome(){
 		String sql = "select * from cuit_zhangwu where username=? and flname like '%收入%'";
 		Object[] params = {MainView.user};
 		try {
@@ -73,7 +72,7 @@ public class ZhangWuDao {
 		}
 	}
 
-	public List<ZhangWu> queryExpense() {
+	public static List<ZhangWu> queryExpense() {
 		String sql = "select * from cuit_zhangwu where username=? and flname like '%支出%'";
 		Object[] params = {MainView.user};
 		try {
@@ -212,6 +211,8 @@ public class ZhangWuDao {
 			throw new RuntimeException(e);
 		}
 	}
+
+
 	public static class Export{
 		static String dir = "accountData/" + MainView.user;//账户数据文件夹
 		static String fileName = dir+"/" + MainView.user + ".txt";//该用户的导出数据
@@ -278,14 +279,14 @@ public class ZhangWuDao {
 				StringBuilder sb = new StringBuilder();
 				while ((line=bufferedReader.readLine()) !=null){
 					boolean id1 = line.startsWith(String.valueOf(id));
-                    if(id1){
+					if(id1){
 						String sql = "select * from cuit_zhangwu where zwid=?";
-	                    List<ZhangWu> query = qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), id);
-	                    String s = Print.exportZhangWu(query);
+						List<ZhangWu> query = qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), id);
+						String s = Print.exportZhangWu(query);
 						sb.append(s);
-                    }else {
+					}else {
 						sb.append(line).append(System.getProperty("line.separator"));
-                    }
+					}
 				}
 				BufferedWriter writer = new BufferedWriter(new FileWriter(acc));
 				writer.write(String.valueOf(sb));
@@ -296,7 +297,134 @@ public class ZhangWuDao {
 			}
 			System.out.println("成功更新导出文件");
 		}
+
 	}
 
 
+	public static class Client{
+		int order;
+		public Client(){
+			this.order = order;
+		}
+		public void connect() throws Exception {
+			Socket sock = new Socket("localhost", 10086); // 连接指定服务器和端口
+			try (InputStream input = sock.getInputStream()) {
+				try (OutputStream output = sock.getOutputStream()) {
+					handle(input, output);
+				}
+			}
+			sock.close();
+			System.out.println("disconnected.");
+		}
+
+		private  void handle(InputStream input, OutputStream output) throws IOException {
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+			Scanner sc = new Scanner(System.in);
+			System.out.println("test");
+			System.out.println("[server] " + reader.readLine());
+			writer.write(MainView.user+"\n");
+			writer.flush();
+//			writer.write(MainView.user);
+//			writer.newLine();
+//			writer.flush();
+			while (true) {
+				System.out.print(">>> 输入1上传账目，输入2下载账目，" +
+						"输入3上传文件，输入4下载文件"); // 打印提示
+				String s = sc.nextLine(); // 读取一行输入
+				if(s.equals("1")){//上传账目
+					Print.showUploadOptions();
+					int op = sc.nextInt();
+					switch (op) {
+						case 1://上传收入
+							writer.write("1\n");
+							writer.flush();
+							List<ZhangWu> zhangWus = queryIncome();
+							String s1 = Print.exportZhangWu(zhangWus);
+							System.out.println(s1);
+							writer.write(Print.exportZhangWu(zhangWus));
+							writer.newLine();
+							writer.flush();
+							System.out.println(reader.readLine());
+						case 2://上传支出
+							writer.write("1\n");
+							writer.flush();
+							List<ZhangWu> zhangWus1 = queryExpense();
+							writer.write(Print.exportZhangWu(zhangWus1));
+							writer.newLine();
+							writer.flush();
+							System.out.println(reader.readLine());
+						case 3:
+							writer.write("1\n");
+							writer.flush();
+							MainView mainView = new MainView();
+							List<ZhangWu> zhangWus2 = mainView.queryBySpecificDate();
+							writer.write(Print.exportZhangWu(zhangWus2));
+							writer.newLine();
+							writer.flush();
+							System.out.println(reader.readLine());
+						case 4:
+							writer.write("1\n");
+							writer.flush();
+							MainView mainView1 = new MainView();
+							List<ZhangWu> zhangWus3 = mainView1.queryBySpecificDate();
+							writer.write(Print.exportZhangWu(zhangWus3));
+							writer.newLine();
+							writer.flush();
+							System.out.println(reader.readLine());
+						case 5:
+							writer.write("1\n");
+							writer.flush();
+							ZhangWuDao zwd = new ZhangWuDao();
+							List<ZhangWu> zhangWus4 = zwd.findAll();
+							writer.write(Print.exportZhangWu(zhangWus4));
+							writer.newLine();
+							writer.flush();
+							System.out.println(reader.readLine());
+
+					}
+				}
+				if(s.equals("2")){//下载账目
+					System.out.println("下载账目");
+					writer.write("2\n");
+					writer.flush();
+					StringBuilder sb = new StringBuilder();
+					String s1;
+					while ((s1=reader.readLine())!=null){
+						sb.append(s1).append(System.getProperty("line.separator"));
+						if(s1.equals(""))break;
+					}
+					BufferedWriter writer1 = new BufferedWriter(new FileWriter(MainView.user + "下载.txt"));
+					writer1.write(String.valueOf(sb));
+					writer1.close();
+					System.out.println("下载成功");
+
+				}
+				if(s.equals("3")){//上传文件
+					writer.write("3\n");
+					writer.flush();
+					System.out.println("请输出要上传文件的路径");
+					String next = sc.next();
+					File file = new File(next);
+					String name = file.getName();
+					long length = file.length();
+					writer.write(name+"\n");
+					writer.flush();
+					writer.write(length+"\n");
+					writer.flush();
+					FileInputStream fileInputStream = new FileInputStream(file);
+					BufferedInputStream bis = new BufferedInputStream(fileInputStream);
+
+					byte[] bytes = new byte[1024];
+					int len;
+					while ((len = bis.read(bytes))!= -1) {
+						output.write(bytes,0,len);
+						output.flush();
+                    }
+					System.out.println("读取完毕");
+				}
+
+			}
+		}
+	}
 }

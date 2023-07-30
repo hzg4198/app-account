@@ -1,6 +1,7 @@
 package com.cuit.jz.utils;
 
 import com.cuit.jz.domain.ZhangWu;
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLPortType;
 
 import java.util.List;
 
@@ -52,6 +53,13 @@ public class Print {
 		System.out.println("--------请选择导出的方式--------");
 		System.out.println(
 				"1.导出收入，2.导出支出，3.选择指定日期导出，4.导出日期范围,5.导出所有"
+		);
+	}
+
+	public static void showUploadOptions() {
+		System.out.println("----请选择上传的账目----");
+		System.out.println(
+				"1.上传收入 2.上传支出 3.选择指定日期上传 4.选择日期范围上传 5.上传所有"
 		);
 	}
 }

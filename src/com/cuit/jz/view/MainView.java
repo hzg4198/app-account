@@ -18,7 +18,7 @@ public class MainView {
 	public static String user;
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-	public void login() throws SQLException {
+	public void login() throws Exception {
 		boolean flag = false;
 		Scanner sc = new Scanner(System.in);
 		while (!flag){
@@ -41,13 +41,13 @@ public class MainView {
 		}
 	}
 
-	public void run(){
+	public void run() throws Exception {
 		boolean flag=true;
 		Scanner in=new Scanner(System.in);
 		while(flag){
 			System.out.println("-----------记账软件-------------");
-			System.out.println("1.查询账务，2.多条件查询，3.添加账务，4.编辑账务，5.删除账务，6.搜索账务，7.导出账务,8.退出");
-			System.out.println("请输入你要操作的功能的序号1-8");
+			System.out.println("1.查询账务，2.多条件查询，3.添加账务，4.编辑账务，5.删除账务，6.搜索账务，7.导出账务，8.上传或下载，9.退出" );
+			System.out.println("请输入你要操作的功能的序号1-9");
 			int op=in.nextInt();
 			switch (op) {
 				case 1:
@@ -69,9 +69,12 @@ public class MainView {
 					searchZhangWu();
 					break;
 				case 7:
-					chooseExportMethod();
+				chooseExportMethod();
 					break;
 				case 8:
+				connectAcc();
+					break;
+				case 9:
 					System.out.println("欢迎下次使用");
 					flag=false;
 					break;
@@ -80,6 +83,11 @@ public class MainView {
 			}
 		}
 	}
+
+	private void connectAcc() throws Exception {
+		zws.connect();
+	}
+
 
 	private void chooseDeleteMethod() {
 		System.out.println("请选择删除的方式");
@@ -347,7 +355,7 @@ public class MainView {
 		return  zhangWus;
 	}
 
-	private List<ZhangWu> queryByRangeDate() {
+	public List<ZhangWu> queryByRangeDate() {
 		while (true) {
 			System.out.println("请输入要查询的起始日期：（格式yyyy-MM-dd）");
 			String startDate = sc.next();
@@ -370,7 +378,7 @@ public class MainView {
 
 	}
 
-	private List<ZhangWu> queryBySpecificDate()  {
+	public List<ZhangWu> queryBySpecificDate()  {
 		System.out.println("请输入要查询的日期：（格式yyyy-MM-dd）");
 		String s = sc.next();
 		try {
@@ -445,7 +453,7 @@ public class MainView {
 		us.Register(username ,password);
 	}
 	//登陆
-	private void Login() throws SQLException {
+	private void Login() throws Exception {
 		boolean flag = false;
 		while (!flag) {
 			System.out.println("请输入用户名：");

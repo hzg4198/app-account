@@ -83,4 +83,12 @@ public class ZhangWuService {
 	public void export(List<ZhangWu> zhangWus){
 		ZhangWuDao.Export.export(zhangWus);
 	}
+
+	public void connect() throws Exception {
+//		ZhangWuDao.Client client = new ZhangWuDao.Client();
+//		client.connect();
+		ZhangWuDao.Client client = new ZhangWuDao.Client();
+		client.connect();
+	}
+
 }
