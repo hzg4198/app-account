@@ -35,7 +35,7 @@ public class ZhangWuService {
 		zwd.addAccount(flname ,money ,account ,time ,description ,user);
 	}
 
-	public void addMutiple(List<ZhangWu> list) {
+	public void addMultiple(List<ZhangWu> list) {
 		zwd.addMuti(list);
 	}
 
@@ -78,5 +78,9 @@ public class ZhangWuService {
 
 	public List<ZhangWu> searchDate(int order, Date date) {
 		return zwd.searchDate(order,date);
+	}
+	//导出方法
+	public void export(List<ZhangWu> zhangWus){
+		ZhangWuDao.Export.export(zhangWus);
 	}
 }

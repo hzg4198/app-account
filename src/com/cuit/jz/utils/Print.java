@@ -16,6 +16,19 @@ public class Print {
 					"\t\t"+zhangWu.getMoney()+"\t\t"+zhangWu.getCreatetime()+"\t\t"+zhangWu.getDescription());
 		}
 	}
+	public static String exportZhangWu(List<ZhangWu> list){
+		if(list.isEmpty()){
+			System.out.println("没有记录");
+			return null;
+		}
+		StringBuilder ans = new StringBuilder();
+		for (ZhangWu zhangwu : list) {
+			String str = zhangwu.getZwid()+"\t"+zhangwu.getFlname()+"\t\t"+zhangwu.getZhanghu()+
+					"\t\t"+zhangwu.getMoney()+"\t\t"+zhangwu.getCreatetime()+"\t\t"+zhangwu.getDescription()+"\r\n";
+			ans.append(str);
+		}
+		return ans.toString();
+	}
 
 	public static void printOptions() {
 		System.out.println(
@@ -32,6 +45,13 @@ public class Print {
 	public static void showTimeKinds(){
 		System.out.println(
 				"1.搜索指定日期，2.搜索指定日期之前，3.搜索指定日期之后，4.搜索日期范围"
+		);
+	}
+
+	public static void showExportKinds() {
+		System.out.println("--------请选择导出的方式--------");
+		System.out.println(
+				"1.导出收入，2.导出支出，3.选择指定日期导出，4.导出日期范围,5.导出所有"
 		);
 	}
 }

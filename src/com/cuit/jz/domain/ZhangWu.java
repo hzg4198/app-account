@@ -65,4 +65,5 @@ public class ZhangWu {
 				", username='" + username + '\'' +
 				'}';
 	}
+
 }

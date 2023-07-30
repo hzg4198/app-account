@@ -69,7 +69,7 @@ public class MainView {
 					searchZhangWu();
 					break;
 				case 7:
-					exportZhangWu();
+					chooseExportMethod();
 					break;
 				case 8:
 					System.out.println("欢迎下次使用");
@@ -221,9 +221,6 @@ public class MainView {
 		Print.printZhangWu(zhangWus);
 	}
 
-	private void switchTime() {
-
-	}
 
 	private void searchDescKeyWords() {
 		System.out.println("请输入要搜索的说明的关键字：");
@@ -265,11 +262,57 @@ public class MainView {
 			zhangWu.setDescription(sc.next());
 			list.add(zhangWu);
 		}
-		zws.addMutiple(list);
+		zws.addMultiple(list);
 
 	}
 
-	private void exportZhangWu() {
+	private void chooseExportMethod() {
+		//选择导出的方式
+		Print.showExportKinds();
+		int order = sc.nextInt();
+		switch (order) {
+			case 1:
+				exportIncome();
+				break;
+			case 2:
+				exportExpense();
+				break;
+			case 3:
+				exportSpecificDate();
+				break;
+			case 4:
+				exportRangeDate();
+				break;
+			case 5:
+				exportAll();
+                break;
+		}
+
+	}
+
+	private void exportAll() {
+		List<ZhangWu> zhangWus = zws.findAll();
+        zws.export(zhangWus);
+	}
+
+	private void exportRangeDate() {
+		List<ZhangWu> zhangWus = queryByRangeDate();
+		zws.export(zhangWus);
+	}
+
+	private void exportSpecificDate() {
+		List<ZhangWu> zhangWus = queryBySpecificDate();
+		zws.export(zhangWus);
+	}
+
+	private void exportExpense() {
+		List<ZhangWu> zhangWus = queryExpense();
+		zws.export(zhangWus);
+	}
+
+	private void exportIncome() {
+		List<ZhangWu> zhangWus = queryIncome();
+		zws.export(zhangWus);
 	}
 
 	private void queryWithCondition() {
@@ -292,17 +335,19 @@ public class MainView {
 		}
 	}
 
-	private void queryExpense() {
+	private List<ZhangWu> queryExpense() {
 		List<ZhangWu> zhangWus = zws.queryExpense();
 		Print.printZhangWu(zhangWus);
+		return  zhangWus;
 	}
 
-	private void queryIncome() {
+	private List<ZhangWu> queryIncome() {
 		List<ZhangWu> zhangWus = zws.queryIncome();
 		Print.printZhangWu(zhangWus);
+		return  zhangWus;
 	}
 
-	private void queryByRangeDate() {
+	private List<ZhangWu> queryByRangeDate() {
 		while (true) {
 			System.out.println("请输入要查询的起始日期：（格式yyyy-MM-dd）");
 			String startDate = sc.next();
@@ -317,7 +362,7 @@ public class MainView {
 				}
 				List<ZhangWu> zhangWus = zws.checkDate(sDate, eDate);
 				Print.printZhangWu(zhangWus);
-				break;
+				return zhangWus;
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}
@@ -325,16 +370,18 @@ public class MainView {
 
 	}
 
-	private void queryBySpecificDate()  {
+	private List<ZhangWu> queryBySpecificDate()  {
 		System.out.println("请输入要查询的日期：（格式yyyy-MM-dd）");
 		String s = sc.next();
 		try {
 			Date date = sdf.parse(s);
 			List<ZhangWu> zhangWus = zws.checkDate(date);
 			Print.printZhangWu(zhangWus);
+			return zhangWus;
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+
 	}
 
 	//查询该用户下所有账目
