@@ -13,7 +13,7 @@ public class Server {
 	static String dirPath;
 
 	public static void main(String[] args) throws IOException {
-		ServerSocket serverSocket = new ServerSocket(10086);
+		ServerSocket serverSocket = new ServerSocket(10087);
 		Socket accept = serverSocket.accept();
 		InputStream inputStream = accept.getInputStream();
 		OutputStream outputStream = accept.getOutputStream();
@@ -24,8 +24,8 @@ public class Server {
 
 	private static void handel(InputStream inputStream, OutputStream outputStream) throws IOException {
 		System.out.println("connecting----");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,StandardCharsets.UTF_8));
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream,StandardCharsets.UTF_8));
 		writer.write("connect success\n");
 		writer.flush();
 		String user = reader.readLine();
@@ -77,6 +77,8 @@ public class Server {
 					break;
 				case "2": //下载账目
 					if (acc.exists()) {
+						writer.write("开始\n");
+						writer.flush();
 						BufferedReader reader1 = new BufferedReader(new FileReader(acc));
 						String s1;
 						while ((s1 = reader1.readLine()) != null) {
@@ -87,7 +89,7 @@ public class Server {
 						writer.flush();
 					} else {
 						System.out.println("该用户没有上传的账目");
-						writer.write("该用户没有上传的账目\n");
+						writer.write("-1\n");
 						writer.flush();
 					}
 					break;
@@ -99,6 +101,12 @@ public class Server {
 					System.out.println("kaishi shangchuan");
 					String length = reader.readLine();
 					int length1 = Integer.parseInt(length);
+					String s1 = reader.readLine();
+					if(Objects.equals(s1,"refresh")){
+						System.out.println("用户端刷新输入");
+						break ;
+					}
+					System.out.println(s1);
 					FileOutputStream outputStream1 = new FileOutputStream(dirPath + "/" + name);
 					BufferedOutputStream bos = new BufferedOutputStream(outputStream1);
 					byte[] bytes = new byte[1024];
@@ -117,13 +125,13 @@ public class Server {
 				}
 				case "4": {
 					File[] files = file.listFiles();
-					int len = files.length;
-					if (len == 0) {
+					if (!file.exists()) {
 						writer.write("0\n");
 						writer.flush();
 						System.out.println("没有上传的文件");
 						break label;
 					}
+					int len = files.length;
 					writer.write(len + "\n");
 					writer.flush();
 					for (int i = 1; i <= files.length; i++) {

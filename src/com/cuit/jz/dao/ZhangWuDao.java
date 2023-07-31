@@ -58,7 +58,8 @@ public class ZhangWuDao {
 			List<ZhangWu> query = qr.query(sql, new BeanListHandler<>(ZhangWu.class), params);
 			return query;
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("参数错误");
+			return null;
 		}
 	}
 
@@ -78,7 +79,8 @@ public class ZhangWuDao {
 		try {
 			return qr.query(JDBCUtils3.getConnection(),sql, new BeanListHandler<>(ZhangWu.class), params);
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("参数错误");
+			return null;
 		}
 	}
 
@@ -90,7 +92,7 @@ public class ZhangWuDao {
 			qr.insert(JDBCUtils3.getConnection() ,sql ,new ArrayHandler() ,params);
 			System.out.println("插入成功");
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("参数错误");
 		}
 	}
 
@@ -106,7 +108,7 @@ public class ZhangWuDao {
 				qr.insert(JDBCUtils3.getConnection() ,sql ,new ArrayHandler() ,params);
 				System.out.println("第"+i+"条账目添加成功！");
 			} catch (SQLException e) {
-				throw new RuntimeException(e);
+				System.out.println("参数错误");
 			}
 		}
 	}
@@ -119,9 +121,11 @@ public class ZhangWuDao {
 			int update = qr.update(JDBCUtils3.getConnection(), sql ,params);
 			System.out.println("成功更新数目："+update);
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("参数错误");;
 		}
 		Export.checkId(id);
+//		Client client = new Client();
+//		client.check(id);
 	}
 
 	public void deleteAcc(List<ZhangWu> list, int index) {
@@ -132,7 +136,7 @@ public class ZhangWuDao {
 			int delete = qr.update(JDBCUtils3.getConnection(), sql ,params);
 			System.out.println("成功删除数目："+delete);
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			System.out.println("删除错误");
 		}
 	}
 
@@ -293,7 +297,7 @@ public class ZhangWuDao {
 				writer.close();
 				bufferedReader.close();
 			} catch (IOException | SQLException e) {
-				throw new RuntimeException(e);
+				System.out.println("参数异常");
 			}
 			System.out.println("成功更新导出文件");
 		}
@@ -307,7 +311,7 @@ public class ZhangWuDao {
 			this.order = order;
 		}
 		public void connect() throws Exception {
-			Socket sock = new Socket("localhost", 10086); // 连接指定服务器和端口
+			Socket sock = new Socket("192.168.1.106", 10087); // 连接指定服务器和端口
 			try (InputStream input = sock.getInputStream()) {
 				try (OutputStream output = sock.getOutputStream()) {
 					handle(input, output);
@@ -318,8 +322,8 @@ public class ZhangWuDao {
 		}
 
 		private  void handle(InputStream input, OutputStream output) throws IOException {
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output,StandardCharsets.UTF_8));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input,StandardCharsets.UTF_8));
 			Scanner sc = new Scanner(System.in);
 			System.out.println("[server] " + reader.readLine());
 			writer.write(MainView.user+"\n");
@@ -332,9 +336,9 @@ public class ZhangWuDao {
 				switch (s) {
 					case "1": //上传账目
 						Print.showUploadOptions();
-						int op = sc.nextInt();
+						String op = sc.next();
 						switch (op) {
-							case 1://上传收入
+							case "1"://上传收入
 								writer.write("1\n");
 								writer.flush();
 								List<ZhangWu> zhangWus = queryIncome();
@@ -344,7 +348,8 @@ public class ZhangWuDao {
 								writer.newLine();
 								writer.flush();
 								System.out.println(reader.readLine());
-							case 2://上传支出
+								break ;
+							case "2"://上传支出
 								writer.write("1\n");
 								writer.flush();
 								List<ZhangWu> zhangWus1 = queryExpense();
@@ -352,7 +357,8 @@ public class ZhangWuDao {
 								writer.newLine();
 								writer.flush();
 								System.out.println(reader.readLine());
-							case 3:
+								break ;
+							case "3":
 								writer.write("1\n");
 								writer.flush();
 								MainView mainView = new MainView();
@@ -361,16 +367,18 @@ public class ZhangWuDao {
 								writer.newLine();
 								writer.flush();
 								System.out.println(reader.readLine());
-							case 4:
+								break ;
+							case "4":
 								writer.write("1\n");
 								writer.flush();
 								MainView mainView1 = new MainView();
-								List<ZhangWu> zhangWus3 = mainView1.queryBySpecificDate();
+								List<ZhangWu> zhangWus3 = mainView1.queryByRangeDate();
 								writer.write(Print.exportZhangWu(zhangWus3));
 								writer.newLine();
 								writer.flush();
 								System.out.println(reader.readLine());
-							case 5:
+								break ;
+							case "5":
 								writer.write("1\n");
 								writer.flush();
 								ZhangWuDao zwd = new ZhangWuDao();
@@ -379,6 +387,8 @@ public class ZhangWuDao {
 								writer.newLine();
 								writer.flush();
 								System.out.println(reader.readLine());
+								break ;
+
 
 						}
 						break;
@@ -386,6 +396,12 @@ public class ZhangWuDao {
 						System.out.println("下载账目");
 						writer.write("2\n");
 						writer.flush();
+						String s2 = reader.readLine();
+						if(s2.equals("-1")){
+							System.out.println("没有上传的账目");
+							break;
+						}
+						System.out.println(s2);
 						StringBuilder sb = new StringBuilder();
 						String s1;
 						while ((s1 = reader.readLine()) != null) {
@@ -410,7 +426,17 @@ public class ZhangWuDao {
 						writer.flush();
 						writer.write(length + "\n");
 						writer.flush();
-						FileInputStream fileInputStream = new FileInputStream(file);
+						FileInputStream fileInputStream = null;
+						try {
+							fileInputStream = new FileInputStream(file);
+						} catch (FileNotFoundException e) {
+							System.out.println("找不到指定的文件");
+							writer.write("refresh\n");
+							writer.flush();
+							break ;
+						}
+						writer.write("begin\n");
+						writer.flush();
 						BufferedInputStream bis = new BufferedInputStream(fileInputStream);
 
 						byte[] bytes = new byte[1024];
@@ -428,6 +454,11 @@ public class ZhangWuDao {
 						System.out.println("test");
 						System.out.println("请输入你要下载的文件的序号");
 						String len = reader.readLine();//文件目录下文件的个数
+						System.out.println(len);
+						if(Objects.equals(len,"0")){
+							System.out.println("没有文件可以下载");
+							break ;
+						}
 
 						List<String> fileList = new ArrayList<>();
 						for (int i = 0; i < Integer.parseInt(len); i++) {
@@ -466,5 +497,19 @@ public class ZhangWuDao {
 
 			}
 		}
+
+//		public void check(int id) throws IOException {
+//			Socket sock = new Socket("localhost",10087);
+//			try(InputStream input = sock.getInputStream()){
+//				try (OutputStream output = sock.getOutputStream()){
+////					String sql = "select * from cuit_zhangwu where zwid=?";
+////					List<ZhangWu> query = qr.query(JDBCUtils3.getConnection(), sql, new BeanListHandler<>(ZhangWu.class), id);
+//					update(input ,output ,id);
+//				}
+//			}
+//			sock.close();
+//
+//		}
+
 	}
 }

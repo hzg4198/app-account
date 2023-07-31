@@ -121,8 +121,13 @@ public class MainView {
 		List<Integer> list = new ArrayList<>();
 		if(num!=0){
 			while(true) {
-				System.out.println("请输入你要删除的序号，输入-1结束");
-				int index = sc.nextInt() - 1;
+				int index;
+				while (true) {
+					System.out.println("请输入你要删除的序号，输入-1结束");
+					index = sc.nextInt() - 1;
+					if(index == -2 || (index >=0 && index < num))break;
+					else System.out.println("越界 重新输入");
+				}
 				if(Objects.equals(index,-2)){
 					System.out.println("输入完毕，你要删除的序号为："+list);
 					break;
@@ -428,8 +433,15 @@ public class MainView {
 		int num = all.size();
 		Print.printZhangWu(all);
 		if(num!=0){
-			System.out.println("请输入你要删除的账户的序号");//维护：判断
-			int index = sc.nextInt() - 1;
+			int index;
+			//维护：判断
+			while(true){
+				System.out.println("请输入你要删除的账户的序号");
+				index = sc.nextInt() - 1;
+				if(index >= 0&& index < num)break;
+				else System.out.println("越界 重新输入");
+			}
+
 			System.out.println("确定删除吗，确定请输入1");
 			String affirm = sc.next();
 			if(Objects.equals(affirm,"1")){
@@ -443,9 +455,14 @@ public class MainView {
 		int num = all.size();
 		Print.printZhangWu(all);
 		if(num!=0) {
-			System.out.println("请输入你要编辑的账目左边的序号");//维护：判断
-			int index = sc.nextInt() - 1;
-			ZhangWu zhangWu = all.get(index);
+			int index;
+			while (true) {
+				System.out.println("请输入你要编辑的账目左边的序号");//维护：判断
+				index = sc.nextInt() - 1;
+				if(index >= 0 && index < num) break;
+				else System.out.println("越界 重新输入");;
+			}
+//			ZhangWu zhangWu = all.get(index);
 			System.out.println("请选择你要编辑的栏位：");
 			Print.printOptions();
 			int op = sc.nextInt();
@@ -459,7 +476,13 @@ public class MainView {
 		System.out.println("请输入你要添加的类别：");
 		String flname = sc.next();
 		System.out.println("请输入金额：");
-		Double money = sc.nextDouble();
+		double money = 0;
+		try {
+			 money = sc.nextDouble();
+		}catch (Exception e){
+			System.out.println("参数错误");
+		}
+
 		System.out.println("请输入账户：");
 		String account = sc.next();
 		System.out.println("请输入时间，输入-1默认为今天");
