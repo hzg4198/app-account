@@ -10,6 +10,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainView {
 	private static final userService us = new userService();
@@ -25,17 +27,20 @@ public class MainView {
 			System.out.println("-----------记账app------------");
 			System.out.println("1.Login,2.register,3.quit");
 			System.out.println("enter the num which you wanna operate: 1-3");
-			int op = sc.nextInt();
+			String op = sc.next();
 			switch (op) {
-				case 1:
+				case "1":
 					Login();
 					break;
-				case 2:
+				case "2":
 					Register();
 					break;
-				case 3:
+				case "3":
 					System.out.println("bye");
 					flag=true;
+					break;
+				default:
+					System.out.println("格式输入错误，重新输入");
 					break;
 			}
 		}
@@ -48,37 +53,39 @@ public class MainView {
 			System.out.println("-----------记账软件-------------");
 			System.out.println("1.查询账务，2.多条件查询，3.添加账务，4.编辑账务，5.删除账务，6.搜索账务，7.导出账务，8.上传或下载，9.退出" );
 			System.out.println("请输入你要操作的功能的序号1-9");
-			int op=in.nextInt();
+			Pattern p = Pattern.compile("^[1-9]$");
+			String op = in.next();
 			switch (op) {
-				case 1:
+				case "1":
 					findZhangWu();
 					break;
-				case 2:
+				case "2":
 					queryWithCondition();
 					break;
-				case 3:
+				case "3":
 					chooseAddMethod();
 					break;
-				case 4:
+				case "4":
 					editZhangWu();
 					break;
-				case 5:
+				case "5":
 					chooseDeleteMethod();
 					break;
-				case 6:
+				case "6":
 					searchZhangWu();
 					break;
-				case 7:
+				case "7":
 				chooseExportMethod();
 					break;
-				case 8:
+				case "8":
 				connectAcc();
 					break;
-				case 9:
+				case "9":
 					System.out.println("欢迎下次使用");
 					flag=false;
 					break;
 				default:
+					System.out.println("格式输入错误，重新输入");
 					break;
 			}
 		}
@@ -92,13 +99,16 @@ public class MainView {
 	private void chooseDeleteMethod() {
 		System.out.println("请选择删除的方式");
 		System.out.println("1.删除单条，2.删除多条");
-		int order = sc.nextInt();
+		String  order = sc.next();
 		switch (order) {
-			case 1:
+			case "1":
 				deleteZhangWu();
 				break;
-			case 2:
+			case "2":
 				deleteMultipleAcc();
+				break;
+			default:
+				System.out.println("格式输入错误，重新输入");
 				break;
 		}
 
@@ -120,8 +130,8 @@ public class MainView {
 				list.add(index);
 			}
 			System.out.println("确认删除请输入1");
-			int affirm = sc.nextInt();
-			if(Objects.equals(affirm ,1))zws.deleteBatch(all ,list);
+			String affirm = sc.next();
+			if(Objects.equals(affirm ,"1"))zws.deleteBatch(all ,list);
 			else System.out.println("取消删除，返回上一级");
 		}
 
@@ -130,22 +140,25 @@ public class MainView {
 	private void searchZhangWu() {
 		System.out.println("请选择搜索的方式：");
 		Print.printOptions();
-		int op = sc.nextInt();
+		String op = sc.next();
 		switch (op) {
-			case 1:
+			case "1":
 				searchNameKeyWords();
 				break;
-			case 2:
+			case "2":
 				switchAccKinds();
 				break;
-			case 3:
+			case "3":
 				chooseMoneyMethod();
 				break;
-			case 4:
+			case "4":
 				chooseTimeMethod();
 				break;
-			case 5:
+			case "5":
 				searchDescKeyWords();
+				break;
+			default:
+				System.out.println("格式输入错误，重新输入");
 				break;
 		}
 	}
@@ -153,19 +166,22 @@ public class MainView {
 	private void chooseTimeMethod() {
 		System.out.println("请选择搜索方式：");
 		Print.showTimeKinds();
-		int order = sc.nextInt();
+		String order = sc.next();
 		switch (order) {
-			case 1:
+			case "1":
 				queryBySpecificDate();
 				break;
-			case 2:
+			case "2":
 				searchTime(0);
 				break;
-			case 3:
+			case "3":
 				searchTime(1);
 				break;
-			case 4:
+			case "4":
 				queryByRangeDate();
+				break;
+			default:
+				System.out.println("格式输入错误，重新输入");
 				break;
 		}
 	}
@@ -199,16 +215,19 @@ public class MainView {
 	private void chooseMoneyMethod() {
 		System.out.println("请选择搜索方式：");
 		Print.showMoneyKinds();
-		int order = sc.nextInt();
+		String order = sc.next();
 		switch (order) {
-			case 1:
+			case "1":
 				searchMoney(0);
 				break;
-			case 2:
+			case "2":
 				searchMoney(1);
 				break;
-			case 3:
+			case "3":
 				searchMoney();
+				break;
+			default:
+				System.out.println("格式输入错误，重新输入");
 				break;
 		}
 	}
@@ -240,10 +259,10 @@ public class MainView {
 	private void chooseAddMethod() {
 		System.out.println("请输入你要添加的方式");
 		System.out.println("1.添加一项，2.添加多项");
-		int op = sc.nextInt();
-		if(Objects.equals(op,1)){
+		String op = sc.next();
+		if(Objects.equals(op,"1")){
 			addSingleZhangWu();
-		}else {
+		}else if (Objects.equals(op,"2")){
 			addMultipleAccount();
 		}
 	}
@@ -277,23 +296,26 @@ public class MainView {
 	private void chooseExportMethod() {
 		//选择导出的方式
 		Print.showExportKinds();
-		int order = sc.nextInt();
+		String order = sc.next();
 		switch (order) {
-			case 1:
+			case "1":
 				exportIncome();
 				break;
-			case 2:
+			case "2":
 				exportExpense();
 				break;
-			case 3:
+			case "3":
 				exportSpecificDate();
 				break;
-			case 4:
+			case "4":
 				exportRangeDate();
 				break;
-			case 5:
+			case "5":
 				exportAll();
                 break;
+			default:
+				System.out.println("格式输入错误，重新输入");
+				break;
 		}
 
 	}
@@ -326,19 +348,22 @@ public class MainView {
 	private void queryWithCondition() {
 		System.out.println("----请选择你要查询的方式----");
 		System.out.println("1.按指定日期查询，2.按日期范围查询，3.查询收入，4.查询支出");
-		int order = sc.nextInt();
+		String order = sc.next();
 		switch (order) {
-			case 1:
+			case "1":
 				queryBySpecificDate();
 				break;
-			case 2:
+			case "2":
 				queryByRangeDate();
 				break;
-			case 3:
+			case "3":
 				queryIncome();
 				break;
-			case 4:
+			case "4":
 				queryExpense();
+				break;
+			default:
+				System.out.println("格式输入错误，重新输入");
 				break;
 		}
 	}
@@ -406,8 +431,8 @@ public class MainView {
 			System.out.println("请输入你要删除的账户的序号");//维护：判断
 			int index = sc.nextInt() - 1;
 			System.out.println("确定删除吗，确定请输入1");
-			int affirm = sc.nextInt();
-			if(Objects.equals(affirm,1)){
+			String affirm = sc.next();
+			if(Objects.equals(affirm,"1")){
 				zws.deleteAcc(all ,index);
 			}
 		}

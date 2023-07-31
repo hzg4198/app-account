@@ -85,8 +85,6 @@ public class ZhangWuService {
 	}
 
 	public void connect() throws Exception {
-//		ZhangWuDao.Client client = new ZhangWuDao.Client();
-//		client.connect();
 		ZhangWuDao.Client client = new ZhangWuDao.Client();
 		client.connect();
 	}
